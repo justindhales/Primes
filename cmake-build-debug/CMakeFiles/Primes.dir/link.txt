@@ -1,1 +1,0 @@
-/usr/bin/c++  -pthread -g   CMakeFiles/Primes.dir/main.cpp.o  -o Primes 
