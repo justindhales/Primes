@@ -132,7 +132,7 @@ std::vector<uint64_t> gen_primes_parallel(uint64_t max_value) {
     primes[0] = 2;
     uint64_t p_index = 1;
     //std::cout << p_index << std::endl;
-    uint64_t root_max_value = uint64_t(floor(sqrt(max_value)));
+    uint64_t root_max_value = uint64_t(ceil(sqrt(max_value)));
 
     // 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, ...
     // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, ...
@@ -207,41 +207,157 @@ std::vector<uint64_t> gen_primes_parallel(uint64_t max_value) {
 std::vector<uint64_t> gen_primes_wheeled(uint64_t max_value) {
     uint64_t wheel[8] = {4, 2, 4, 2, 4, 6, 2, 6};
     uint64_t wheel_i = 0;
-    uint64_t sum[8] = {4, 6, 10, 12, 16, 22, 24, 30};
-    uint64_t turns = 0;
-    //uint64_t width = 30;
+    //uint64_t sum[8] = {4, 6, 10, 12, 16, 22, 24, 30};
+    //uint64_t turns = 0;
     uint64_t primes_array_size = overestimate_pi(max_value);
-
     std::vector<uint64_t> primes(primes_array_size, 0);
-
-    return primes;
     primes[0] = 2;
     primes[1] = 3;
     primes[2] = 5;
     uint64_t p_index = 3;
 
-    uint64_t root_max_value = uint64_t(floor(sqrt(max_value)));
+    uint64_t root_max_value = uint64_t(ceil(sqrt(max_value)));
 
-    uint64_t sieve_size = (max_value * 0.3) - 3;
+    uint64_t sieve_size = (max_value / 2) - 1;
     std::vector<bool> sieve(sieve_size, true);
 
+    // Remove multiples of 3 and 5
     uint64_t prime;
-    for (uint64_t i = 0; i < root_max_value; ++i) {
-        if (sieve[i]) {
-            prime = turns * 30 + wheel[wheel_i];
-            primes[p_index] = prime;
-            prime = (i * 2) + 3;
-            //std::cout << "new prime location:" << p_index << std::endl;
-            primes[p_index] = prime;
-            //std::cout << "new prime:" << prime << std::endl;
-            ++p_index;
-            for (uint64_t m = i + (prime * (prime / 2)); m < sieve_size; m += prime) {
-                sieve[m] = false;
-            }
+    for(uint64_t p = 0; p <= 1; ++p) {
+        prime = (p * 2) + 3;
+        for (uint64_t m = p + (prime * (prime / 2)); m < sieve_size; m += prime) {
+            sieve[m] = false;
         }
     }
 
+    uint64_t sieve_index = 2;
 
+    prime = 7;
+    for (; prime < root_max_value;) {
+        if (sieve[sieve_index]) {
+            primes[p_index] = prime;
+            ++p_index;
+
+            for (uint64_t m = sieve_index + (prime * (prime / 2)); m < sieve_size; m += prime) {
+                sieve[m] = false;
+            }
+        }
+
+        prime += wheel[wheel_i];
+        sieve_index += wheel[wheel_i] / 2;
+        wheel_i = (wheel_i + 1) % 8;
+    }
+
+    for(; sieve_index < sieve_size;) {
+        if(sieve[sieve_index]) {
+            primes[p_index] = (sieve_index * 2) + 3;
+            ++p_index;
+        }
+        sieve_index += wheel[wheel_i] / 2;
+        wheel_i = (wheel_i + 1) % 8;
+    }
+
+    primes.resize(p_index);
+
+    return primes;
+}
+
+void print_primes_wheeled(uint64_t max_value) {
+    uint64_t wheel[8] = {4, 2, 4, 2, 4, 6, 2, 6};
+    uint64_t wheel_i = 0;
+    //uint64_t sum[8] = {4, 6, 10, 12, 16, 22, 24, 30};
+    //uint64_t turns = 0;
+
+    std::cout << "2\n3\n5\n";
+
+    uint64_t root_max_value = uint64_t(ceil(sqrt(max_value)));
+
+    uint64_t sieve_size = (max_value / 2) - 1;
+    std::vector<bool> sieve(sieve_size, true);
+
+    uint64_t prime;
+    for(uint64_t p = 0; p <= 1; ++p) {
+        prime = (p * 2) + 3;
+        for (uint64_t m = p + (prime * (prime / 2)); m < sieve_size; m += prime) {
+            sieve[m] = false;
+        }
+    }
+
+    uint64_t sieve_index = 2;
+
+    prime = 7;
+    for (; prime < root_max_value;) {
+        if (sieve[sieve_index]) {
+            std::cout << prime << '\n';
+
+            for (uint64_t m = sieve_index + (prime * (prime / 2)); m < sieve_size; m += prime) {
+                sieve[m] = false;
+            }
+        }
+
+        prime += wheel[wheel_i];
+        sieve_index += wheel[wheel_i] / 2;
+        wheel_i = (wheel_i + 1) % 8;
+    }
+
+    for(; sieve_index < sieve_size;) {
+        if(sieve[sieve_index]) {
+            std::cout << (sieve_index * 2) + 3 << '\n';
+        }
+        sieve_index += wheel[wheel_i] / 2;
+        wheel_i = (wheel_i + 1) % 8;
+    }
+}
+
+void print_primes_wheeled2(uint64_t max_value) {
+    uint64_t wheel[8] = {4, 2, 4, 2, 4, 6, 2, 6};
+    uint64_t wheel_i = 0;
+
+    std::cout << "2\n3\n5";
+
+    uint64_t root_max_value = uint64_t(ceil(sqrt(max_value)));
+
+    // All odd numbers
+    uint64_t sieve_size = (max_value / 2) - 1;
+    std::vector<bool> sieve(sieve_size, true);
+
+    uint64_t prime;
+
+    // Mark as not prime all multiples of 3 and 5
+    for(uint64_t p = 0; p <= 1; ++p) {
+        prime = (p * 2) + 3;
+        for (uint64_t m = p + (prime * (prime / 2)); m < sieve_size; m += prime) {
+            sieve[m] = false;
+        }
+    }
+
+    uint64_t sieve_index = 2;
+    uint64_t inner_wheel_i;
+    prime = 7;
+    while(prime < root_max_value) {
+        if(sieve[sieve_index]) {
+            std::cout << prime << '\n';
+
+            inner_wheel_i = wheel_i;
+            for(uint64_t m = sieve_index + (prime * (prime / 2)); m < sieve_size;) {
+                sieve[m] = false;
+                m += prime * (wheel[inner_wheel_i] / 2);
+                inner_wheel_i = (inner_wheel_i + 1) % 8;
+            }
+        }
+
+        prime += wheel[wheel_i];
+        sieve_index += wheel_i / 2;
+        wheel_i = (wheel_i + 1) % 8;
+    }
+
+    while(sieve_index < sieve_size) {
+        if(sieve[sieve_index]) {
+            std::cout << (sieve_index * 2) + 3 << '\n';
+        }
+        sieve_index += wheel[wheel_i] / 2;
+        wheel_i = (wheel_i + 1) % 8;
+    }
 }
 
 // Should include best guess of all prime numbers between [0, max_value) and sorted from smallest to largest.
@@ -270,8 +386,45 @@ int main(int argc, char* argv[]) {
     uint64_t max_value;
     std::istringstream iss(argv[1]);
     iss >> max_value;
+    /*
+    uint64_t distance = 0;
+    std::vector<uint64_t> distances;
+    for(uint64_t n = 0; n < max_value - 3; n += 2) {
+        std::cout << n << ": " << n + 3 << " | ";
+        if(((n + 3) % 3 != 0) && ((n + 3) % 5 != 0) && ((n + 3) % 7 != 0) && ((n + 3) % 11 == 0)) {
+            std::cout << "first " << (distance / 11) * 2;
+            distances.push_back((distance / 11) * 2);
+            distance = 0;
+        }
+        ++distance;
+        std::cout << std::endl;
+    }
+
+    for(uint64_t& d : distances) {
+        std::cout << d << " ";
+    }
+    std::cout << std::endl;*/
+
     //auto start_gen = std::chrono::system_clock::now();
-    print_primes(max_value);
+    //print_primes(max_value);
+    print_primes_wheeled2(max_value);
+    //std::vector<uint64_t> primes = gen_primes_wheeled(max_value);
+    //std::cout << primes.size() << std::endl;
+    /*for(uint64_t& prime : primes) {
+        if(prime == 2) {
+            continue;
+        }
+        if(prime % 2 == 0) {
+            std::cout << prime << std::endl;
+        }
+        for(uint64_t i = 3; i < prime; i += 2) {
+            if(prime % i == 0) {
+                std::cout << prime << std::endl;
+            }
+        }
+    }*/
+
+    //std::cout << all_prime(primes) << std::endl;
     //auto end_gen = std::chrono::system_clock::now();
     //std::chrono::duration<double> elapsed = end_gen - start_gen;
 
