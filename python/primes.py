@@ -12,7 +12,7 @@ def gen_primes(max_value:int):
         if sieve[i]:
             prime = (i * 2) + 3
             primes.append(prime)
-            for m in range(i + (prime * math.floor(prime / 2)), sieve_size, prime):
+            for m in range(i + (prime * (prime // 2)), sieve_size, prime):
                 sieve[m] = False
 
     for i in range(root_max_value, sieve_size):

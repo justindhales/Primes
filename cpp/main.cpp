@@ -95,34 +95,100 @@ std::vector<uint64_t> gen_primes(uint64_t max_value) {
     return primes;
 }
 
-void print_primes(uint64_t max_value) {
-    uint64_t root_max_value = uint64_t(ceil(sqrt(max_value)));
+void print_primes_bitmap(uint64_t max_value) {
+    uint64_t max_value_root_index = (uint64_t(ceil(sqrt(max_value))) - 3) / 2;
 
     // 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, ...
     // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, ...
-    uint64_t sieve_size = (max_value / 2) - 1;
-    std::vector<bool> sieve(sieve_size, true);
-    std::cout << 2 << '\n';
+    uint64_t sieve_size = ((max_value - 3) / 2) + 1;
+    uint8_t* sieve = (uint8_t*) calloc((sieve_size / 8) + 1, sizeof(uint8_t));
+    uint8_t mask = 1;
+    std::cout << "2\n";
     uint64_t prime;
-    for (uint64_t i = 0; i < root_max_value; ++i) {
-        if (sieve[i]) {
+    uint64_t i;
+    uint64_t m;
+    for (i = 0; i <= max_value_root_index; ++i) {
+        if ((sieve[i / 8] & mask << (i % 8)) == 0) {
             prime = (i * 2) + 3;
             std::cout << prime << '\n';
-            for (uint64_t m = i + (prime * (prime / 2)); m < sieve_size; m += prime) {
-                sieve[m] = false;
+            //std::cout << ((prime * prime) / 2) - 1 << '\n';
+            for (m = ((prime * prime) / 2) - 1; m < sieve_size; m += prime) {
+                sieve[m / 8] |= mask << (m % 8);
+                //printf("0x%02x\n", sieve[m / 8]);
+                //std::cout << "byte " << m / 8 << ", bit " << m % 8 << std::endl;
             }
         }
     }
 
-    for (uint64_t i = root_max_value; i < sieve_size; ++i) {
-        if (sieve[i]) {
-            std::cout << (i * 2) + 3 << '\n';
+    for (i = max_value_root_index + 1; i < sieve_size; ++i) {
+        if ((sieve[i / 8] & mask << (i % 8)) == 0) {
+           std::cout << (i * 2) + 3 << '\n';
         }
     }
 
     std::cout << std::flush;
+    free(sieve);
+}
 
-    return;
+void print_primes_vector(uint64_t max_value) {
+    uint64_t max_value_root_index = (uint64_t(ceil(sqrt(max_value))) - 3) / 2;
+
+    // 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, ...
+    // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, ...
+    uint64_t sieve_size = ((max_value - 3) / 2) + 1;
+    std::vector<bool> sieve(sieve_size);
+    std::cout << "2\n";
+    uint64_t prime;
+    uint64_t i;
+    uint64_t m;
+    for (i = 0; i <= max_value_root_index; ++i) {
+        if (!sieve[i]) {
+            prime = (i * 2) + 3;
+            std::cout << prime << '\n';
+            for (m = ((prime * prime) / 2) - 1; m < sieve_size; m += prime) {
+                sieve[m] = true;
+            }
+        }
+    }
+
+    for (i = max_value_root_index + 1; i < sieve_size; ++i) {
+        if (!sieve[i]) {
+           std::cout << (i * 2) + 3 << '\n';
+        }
+    }
+
+    std::cout << std::flush;
+}
+
+void print_primes2(uint64_t max_value) {
+    uint64_t max_value_root_index = (uint64_t(ceil(sqrt(max_value))) - 3) / 2;
+
+    // 0, 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31,  32,  33,  34,  35,  36,  37,  38,  39,  40,  41...
+    // 5, 7, 11, 13, 17, 19, 23, 25, 29, 31, 35, 37, 41, 43, 47, 49, 53, 55, 59, 61, 65, 67, 71, 73, 77, 79, 83, 85, 89, 91, 95, 97, 101, 103, 107, 109, 113, 115, 117, 121,...
+    uint64_t sieve_size = (max_value / 3) - 1;
+    std::vector<bool> sieve(sieve_size, true);
+    std::cout << "2\n3\n";
+    uint64_t prime;
+
+    for (uint64_t i = 0; i < max_value_root_index; ++i) {
+        if (sieve[i]) {
+            prime = (i * 3) - (i % 2) + 5;
+            std::cout << prime << '\n';
+
+            if(i % 2) {
+                break;
+            }
+            for (uint64_t m = ((prime * prime) / 3) - 1; m < sieve_size; m += prime) {
+                sieve[i] = false;
+            }
+        }
+    }
+
+    for (uint64_t i = max_value_root_index; i < sieve_size; ++i) {
+        if (sieve[i]) {
+            std::cout << (i * 3) - (i % 2) + 5 << '\n';
+        }
+    }
 }
 
 std::vector<uint64_t> gen_primes_parallel(uint64_t max_value) {
@@ -360,6 +426,93 @@ void print_primes_wheeled2(uint64_t max_value) {
     }
 }
 
+void print_primes_wheeled3(uint64_t max_value) {
+    uint64_t rows = uint64_t(ceil(max_value / 30.0));
+    // False if prime
+    // An array of false variables
+    auto nums = new bool[rows][30];
+    // Handle 1
+    nums[0][0] = true;
+    uint w; // Wheel index
+    uint m; // Next multiple of wheel prime
+    uint64_t r; // Row index
+    // Handle 2
+    std::cout << 2 << std::endl;
+    for(r = 1; r < rows; ++r) {
+        nums[r][1] = true;
+        //std::cout << "\tmarking " << r * 30 + w + 1 << std::endl;
+    }
+    for(m = 3; m < 30; m += 2) {
+        nums[0][m] = true;
+        //std::cout << "marking " << m + 1 << std::endl;
+        for(r = 1; r < rows; ++r) {
+            nums[r][m] = true;
+            //std::cout << "\tmarking " << r * 30 + m + 1 << std::endl;
+        }
+    }
+    // Handle 3+
+    for(w = 2; w < 30; w += 2) {
+        if(!nums[0][w]) {
+            std::cout << w + 1 << std::endl;
+            // This number must be prime
+            // Remove all prime spokes if one of the basis numbers
+            if(w < 5) {
+                for(r = 1; r < rows; ++r) {
+                    nums[r][w] = true;
+                    //std::cout << "\tmarking " << r * 30 + w + 1 << std::endl;
+                }
+            }
+            // Remove all wheel composites and their spokes
+            for(m = (w * w + 2 * w); m < 30; m += 2 * (w + 1)) {
+                nums[0][m] = true;
+                //std::cout << "marking " << m + 1 << std::endl;
+                for(r = 1; r < rows; ++r) {
+                    nums[r][m] = true;
+                    //std::cout << "\tmarking " << r * 30 + m + 1 << std::endl;
+                }
+            }
+        }
+    }
+
+    uint64_t prime_i = 6;
+    uint64_t jumps[] = {4, 2, 4, 2, 4, 6, 2, 6};
+    uint jump_i = 0;
+    uint i;
+    uint64_t max_sieve_value = uint64_t(ceil(sqrt(max_value)));
+    while(prime_i + 1 < max_sieve_value) {
+        //r = prime_i / 30;
+        //w = prime_i % 30;
+        // If prime
+        if(!nums[prime_i / 30][prime_i % 30]) {
+            if(prime_i + 1 > 30) {
+                std::cout << prime_i + 1 << std::endl;
+            }
+            m = (prime_i * prime_i + 2 * prime_i);
+            // There are only 15 possible odd mod 30 values
+            for(i = 0; m / 30 < rows || i < 15; ++i) {
+                for(r = m / 30; r < rows; r += prime_i + 1) {
+                    nums[r][m % 30] = true;
+                    //std::cout << "\tmarking " << r * 30 + (m % 30) + 1 << std::endl;
+                }
+
+                m += 2 * (prime_i + 1);
+            }
+        }
+
+        prime_i += jumps[jump_i];
+        jump_i = (jump_i + 1) % 8;
+    }
+
+    while(prime_i < max_value) {
+        if(!nums[prime_i / 30][prime_i % 30]) {
+            std::cout << prime_i + 1 << "\n";
+        }
+
+        prime_i += jumps[jump_i];
+        jump_i = (jump_i + 1) % 8;
+    }
+}
+
 // Should include best guess of all prime numbers between [0, max_value) and sorted from smallest to largest.
 // Returns the first non-prime number OR 0 if all are prime.
 uint64_t all_prime(std::vector<uint64_t> primes) {
@@ -406,8 +559,9 @@ int main(int argc, char* argv[]) {
     std::cout << std::endl;*/
 
     //auto start_gen = std::chrono::system_clock::now();
-    //print_primes(max_value);
-    print_primes_wheeled2(max_value);
+    print_primes_bitmap(max_value);
+    //print_primes_wheeled3(max_value);
+    //print_primes_wheeled2(max_value);
     //std::vector<uint64_t> primes = gen_primes_wheeled(max_value);
     //std::cout << primes.size() << std::endl;
     /*for(uint64_t& prime : primes) {
