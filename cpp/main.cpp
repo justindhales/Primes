@@ -560,6 +560,7 @@ int main(int argc, char* argv[]) {
 
     //auto start_gen = std::chrono::system_clock::now();
     print_primes_bitmap(max_value);
+    //print_primes_vector(max_value);
     //print_primes_wheeled3(max_value);
     //print_primes_wheeled2(max_value);
     //std::vector<uint64_t> primes = gen_primes_wheeled(max_value);
