@@ -11,8 +11,8 @@ void print_primes_bitmap(size_t max_value) {
   bitmap_t* sieve = bitmap_new(sieve_size);
   // Set all bits to 1
   bitmap_init(sieve, 0xff);
-  FILE* tmp = tmpfile();
-  fprintf(tmp, "2\n");
+  // FILE* tmp = tmpfile();
+  fprintf(stdout, "2\n");
 
   size_t prime;
   size_t i;  // index
@@ -21,7 +21,19 @@ void print_primes_bitmap(size_t max_value) {
   for (i = 0; i <= max_value_root_index; ++i) {
     if (bitmap_get(sieve, i)) {
       prime = (i * 2) + 3;
-      fprintf(tmp, "%ld\n", prime);
+      fprintf(stdout, "%ld\n", prime);
+
+      for (m = ((prime * prime) / 2) - 1; m <= sieve_size; m += prime) {
+        bitmap_set(sieve, m, 0);
+      }
     }
   }
+
+  for (i = max_value_root_index + 1; i < sieve_size; ++i) {
+    if (bitmap_get(sieve, i)) {
+      fprintf(stdout, "%ld\n", (i * 2) + 3);
+    }
+  }
+
+  // printf("%s", tmp);
 }

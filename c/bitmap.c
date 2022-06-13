@@ -17,33 +17,33 @@ void bitmap_free(bitmap_t* bitmap) {
   free(bitmap);
 }
 
-uint8_t bitmap_get(bitmap_t* bitmap, size_t index) {
-  return (bitmap->bytes[index / 8] >> (index % 8)) & 1;
-}
+// uint8_t bitmap_get(bitmap_t* bitmap, size_t index) {
+//   return (bitmap->bytes[index / 8] >> (index % 8)) & 1;
+// }
 
-int bitmap_get_secure(bitmap_t* bitmap, size_t index, uint8_t* value) {
-  if (index >= bitmap->size) {
-    return FALSE;
-  }
+// int bitmap_get_secure(bitmap_t* bitmap, size_t index, uint8_t* value) {
+//   if (index >= bitmap->size) {
+//     return FALSE;
+//   }
 
-  *value = bitmap_get(bitmap, index);
-  return TRUE;
-}
+//   *value = bitmap_get(bitmap, index);
+//   return TRUE;
+// }
 
-void bitmap_set(bitmap_t* bitmap, size_t index, uint8_t value) {
-  // Convert value to boolean with (value > 0)
-  if (value > 0) {
-    bitmap->bytes[index / 8] |= (1 << (index % 8));
-  } else {
-    bitmap->bytes[index / 8] &= ~(1 << (index % 8));
-  }
-}
+// void bitmap_set(bitmap_t* bitmap, size_t index, uint8_t value) {
+//   // Convert value to boolean with (value > 0)
+//   if (value > 0) {
+//     bitmap->bytes[index / 8] |= (1 << (index % 8));
+//   } else {
+//     bitmap->bytes[index / 8] &= ~(1 << (index % 8));
+//   }
+// }
 
-int bitmap_set_secure(bitmap_t* bitmap, size_t index, uint8_t value) {
-  if (index >= bitmap->size) {
-    return FALSE;
-  }
+// int bitmap_set_secure(bitmap_t* bitmap, size_t index, uint8_t value) {
+//   if (index >= bitmap->size) {
+//     return FALSE;
+//   }
 
-  bitmap_set(bitmap, index, value);
-  return TRUE;
-}
+//   bitmap_set(bitmap, index, value);
+//   return TRUE;
+// }
