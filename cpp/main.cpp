@@ -133,7 +133,7 @@ void print_primes_bitmap(uint64_t max_value) {
   free(sieve);
 }
 
-void print_primes_count_vector_2(uint64_t max_value) {
+void print_primes_count_vector_sundaram(uint64_t max_value) {
   std::cout << "Sundaram's version" << std::endl;
   uint64_t sieve_size = ((max_value - 3) / 2) + 1;
   std::cout << "Sieve size: " << sieve_size << std::endl;
@@ -170,13 +170,49 @@ void print_primes_count_vector_2(uint64_t max_value) {
 
 void print_primes_count_vector(uint64_t max_value) {
   std::cout << "My version" << std::endl;
-  uint64_t max_value_root_index = (uint64_t(ceil(sqrt(max_value))) - 3) / 2;
+  uint64_t max_value_root_index = uint64_t((sqrt(max_value) - 3) / 2.0);
 
   // 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
   // 20, 21, 22, 23, ...
   // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41,
   // 43, 45, 47, 49, ...
-  uint64_t sieve_size = ((max_value - 3) / 2) + 1;
+  uint64_t sieve_size = (max_value - 1) / 2;
+  std::vector<bool> sieve(sieve_size);
+
+  uint64_t prime;
+  uint64_t i;
+  uint64_t m;
+  uint64_t operations = 0;
+  uint64_t count = 1;
+  for (i = 0; i <= max_value_root_index; ++i) {
+    if (!sieve[i]) {
+      ++count;
+      prime = (i * 2) + 3;
+      for (m = ((prime * prime) / 2) - 1; m < sieve_size; m += prime) {
+        sieve[m] = true;
+        ++operations;
+      }
+    }
+  }
+
+  std::cout << "Total operations: " << operations << std::endl;
+
+  for (i = max_value_root_index + 1; i < sieve_size; ++i) {
+    if (!sieve[i]) {
+      ++count;
+    }
+  }
+
+  std::cout << "Found " << count << " primes to " << max_value << std::endl;
+}
+
+void print_primes_count_vector_2(uint64_t max_value) {
+  std::cout << "My version 2" << std::endl;
+  uint64_t max_value_root_index = (uint64_t(ceil(sqrt(max_value))) - 3) / 2;
+
+  // 0, 1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17
+  // 5, 7, 11, 13, 17, 19, 23, 25, 29, 31, 35, 37, 41, 43, 47, 49, 53, 55,
+  uint64_t sieve_size = ((max_value - 5) / 2) + 1;
   std::vector<bool> sieve(sieve_size);
 
   uint64_t prime;
@@ -646,7 +682,8 @@ int main(int argc, char* argv[]) {
 
   // auto start_gen = std::chrono::system_clock::now();
   // print_primes_bitmap(max_value);
-  print_primes_count_vector_2(max_value);
+  print_primes_count_vector(max_value);
+  // print_primes_count_vector_2(max_value);
   // print_primes_vector(max_value);
   // print_primes_wheeled3(max_value);
   // print_primes_wheeled2(max_value);
