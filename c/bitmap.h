@@ -38,6 +38,10 @@ inline void bitmap_set(bitmap_t* bitmap, size_t index, uint8_t value) {
   } else {
     bitmap->bytes[index / 8] &= ~(1 << (index % 8));
   }
+
+  // bitmap->bytes[index / 8] ^=
+  //     (-(uint8_t)(value > 0) ^ bitmap->bytes[index / 8]) & (1UL << (index %
+  //     8));
 }
 
 inline int bitmap_set_secure(bitmap_t* bitmap, size_t index, uint8_t value) {

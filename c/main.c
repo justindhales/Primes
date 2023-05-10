@@ -11,6 +11,6 @@ int main(int argc, char const *argv[]) {
 
   size_t max_value = strtoumax(argv[1], NULL, 10);
 
-  print_primes_bitmap(max_value);
+  print_primes_bitmap2(max_value);
   return 0;
 }

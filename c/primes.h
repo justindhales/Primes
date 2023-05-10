@@ -8,4 +8,6 @@
 
 void print_primes_bitmap(size_t max_value);
 
+void print_primes_bitmap2(size_t max_value);
+
 #endif  // PRIMES_H

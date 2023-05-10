@@ -1,0 +1,10 @@
+# Start with Google style
+
+BasedOnStyle: Google
+
+# My own changes
+
+SeparateDefinitionBlocks: Always
+PointerAlignment: Left
+AllowShortBlocksOnASingleLine: Empty
+AllowShortFunctionsOnASingleLine: Empty

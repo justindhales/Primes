@@ -2,7 +2,7 @@
 // Created by jdhales on 7/15/21.
 //
 
-//#include "Primes.h"
+// #include "Primes.h"
 #include <math.h>
 #include <omp.h>
 
@@ -101,8 +101,8 @@ void print_primes_bitmap(uint64_t max_value) {
   uint64_t max_value_root_index = (uint64_t(ceil(sqrt(max_value))) - 3) / 2;
 
   // 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-  // 20, 21, 22, 23, ...
-  // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, ...
+  // 20, 21, 22, 23, ... 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31,
+  // 33, 35, 37, 39, 41, 43, 45, 47, 49, ...
   uint64_t sieve_size = ((max_value - 3) / 2) + 1;
   uint8_t* sieve = (uint8_t*)calloc((sieve_size / 8) + 1, sizeof(uint8_t));
   uint8_t mask = 1;
@@ -147,7 +147,7 @@ void print_primes_count_vector_2(uint64_t max_value) {
   for (i = 1; i <= max_value_root_index; ++i) {
     prime = (i * 2) + 3;
 
-    for(m = (prime * prime) - 3; m < sieve_size; m += prime) {
+    for (m = (prime * prime) - 3; m < sieve_size; m += prime) {
       sieve[m] = true;
       ++operations;
     }
@@ -172,7 +172,8 @@ void print_primes_count_vector(uint64_t max_value) {
 
   // 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
   // 20, 21, 22, 23, ...
-  // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, ...
+  // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41,
+  // 43, 45, 47, 49, ...
   uint64_t sieve_size = ((max_value - 3) / 2) + 1;
   std::vector<bool> sieve(sieve_size);
 
@@ -194,7 +195,6 @@ void print_primes_count_vector(uint64_t max_value) {
 
   std::cout << "Total operations: " << operations << std::endl;
 
-
   for (i = max_value_root_index + 1; i < sieve_size; ++i) {
     if (!sieve[i]) {
       ++count;
@@ -208,8 +208,8 @@ void print_primes_vector(uint64_t max_value) {
   uint64_t max_value_root_index = (uint64_t(ceil(sqrt(max_value))) - 3) / 2;
 
   // 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
-  // 20, 21, 22, 23, ...
-  // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41, 43, 45, 47, 49, ...
+  // 20, 21, 22, 23, ... 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31,
+  // 33, 35, 37, 39, 41, 43, 45, 47, 49, ...
   uint64_t sieve_size = ((max_value - 3) / 2) + 1;
   std::vector<bool> sieve(sieve_size);
   std::cout << "2\n";
@@ -313,7 +313,7 @@ std::vector<uint64_t> gen_primes_parallel(uint64_t max_value) {
       // std::cout << "new prime location:" << p_index << std::endl;
       // std::cout << primes.size() << std::endl;
       primes[p_index] = prime;
-      std::cout << "new prime: " << prime << std::endl;
+      // std::cout << "new prime: " << prime << std::endl;
       ++p_index;
       // std::cout << p_index << std::endl;
       // std::cout << "prime: " << prime << std::endl;
@@ -643,10 +643,8 @@ int main(int argc, char* argv[]) {
   std::cout << std::endl;*/
 
   // auto start_gen = std::chrono::system_clock::now();
-  // print_primes_bitmap(max_value);
+  print_primes_bitmap(max_value);
   // print_primes_vector(max_value);
-  print_primes_count_vector(max_value);
-  print_primes_count_vector_2(max_value);
   // print_primes_wheeled3(max_value);
   // print_primes_wheeled2(max_value);
   // std::vector<uint64_t> primes = gen_primes_wheeled(max_value);
