@@ -177,7 +177,7 @@ void print_primes_count_vector(uint64_t max_value) {
   // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41,
   // 43, 45, 47, 49, ...
   uint64_t sieve_size = (max_value - 1) / 2;
-  std::vector<bool> sieve(sieve_size);
+  std::vector<bool> sieve(sieve_size, true);
 
   uint64_t prime;
   uint64_t i;
@@ -185,11 +185,11 @@ void print_primes_count_vector(uint64_t max_value) {
   uint64_t operations = 0;
   uint64_t count = 1;
   for (i = 0; i <= max_value_root_index; ++i) {
-    if (!sieve[i]) {
+    if (sieve[i]) {
       ++count;
       prime = (i * 2) + 3;
-      for (m = ((prime * prime) / 2) - 1; m < sieve_size; m += prime) {
-        sieve[m] = true;
+      for (m = (prime * prime / 2) - 1; m < sieve_size; m += prime) {
+        sieve[m] = false;
         ++operations;
       }
     }
@@ -198,7 +198,7 @@ void print_primes_count_vector(uint64_t max_value) {
   std::cout << "Total operations: " << operations << std::endl;
 
   for (i = max_value_root_index + 1; i < sieve_size; ++i) {
-    if (!sieve[i]) {
+    if (sieve[i]) {
       ++count;
     }
   }
