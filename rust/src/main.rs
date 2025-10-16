@@ -1,13 +1,13 @@
-use core::time;
 use std::{
-    sync::{mpsc, Arc, Mutex},
-    thread::{self}, time::Instant,
+    sync::{Arc, Mutex, mpsc},
+    thread::{self},
+    time::Instant,
 };
 
 use bitvec::prelude::*;
 
 fn overestimate_pi_func(max_value: f64) -> usize {
-    return (max_value / (max_value.ln() - 1.1)) as usize;
+    (max_value / (max_value.ln() - 1.1)) as usize
 }
 
 fn gen_primes(max_value: usize) -> Vec<usize> {
@@ -33,8 +33,8 @@ fn gen_primes(max_value: usize) -> Vec<usize> {
         }
     }
 
-    for i in (max_value_root_index + 1)..sieve_size {
-        if sieve[i] {
+    for (i, s) in sieve.iter().enumerate().skip(max_value_root_index + 1) {
+        if *s {
             primes[p_index] = (i * 2) + 3;
             p_index += 1;
         }
@@ -63,8 +63,8 @@ fn primes_count(max_value: usize) -> usize {
         }
     }
 
-    for i in (max_value_root_index + 1)..sieve_size {
-        if sieve[i] {
+    for s in sieve.iter().skip(max_value_root_index + 1) {
+        if *s {
             count += 1;
         }
     }
@@ -96,7 +96,7 @@ fn primes_count_two_threads(max_value: usize) -> usize {
         let mut upper_sieve = upper_sieve_clone.lock().unwrap();
         loop {
             let (start_i, prime) = rx.recv().unwrap();
-            println!("Thread starting");
+            // println!("Thread starting");
             // println!("thread - prime: {} start: {}", prime, (start_i * 2) + 3);
             if prime == 0 {
                 break;
@@ -119,15 +119,14 @@ fn primes_count_two_threads(max_value: usize) -> usize {
             //     (m * 2) + 3,
             //     root_sieve.len()
             // );
-            println!("Main starting");
+            // println!("Main starting");
             while m < root_sieve.len() {
                 root_sieve.set(m, false);
                 m += prime;
             }
             // Signal the thread to compute the other part
-            match tx.send((m - root_sieve.len(), prime)) {
-                Err(e) => panic!("Could not send pair: {:?}", e),
-                _ => (),
+            if let Err(e) = tx.send((m - root_sieve.len(), prime)) {
+                panic!("Could not send pair: {e:?}");
             }
 
             // thread::sleep(time::Duration::from_secs(1));
@@ -135,14 +134,12 @@ fn primes_count_two_threads(max_value: usize) -> usize {
     }
 
     // Signal the thread to close
-    match tx.send((0, 0)) {
-        Err(e) => panic!("Could not signal to close: {:?}", e),
-        _ => (),
+    if let Err(e) = tx.send((0, 0)) {
+        panic!("Could not signal to close: {e:?}");
     }
 
-    match handle.join() {
-        Err(e) => panic!("Could not join worker thread: {:?}", e),
-        _ => (),
+    if let Err(e) = handle.join() {
+        panic!("Could not join worker thread: {e:?}");
     }
 
     {
@@ -209,13 +206,13 @@ fn main() {
     let args: Vec<String> = std::env::args().collect();
     assert!(args.len() >= 2);
     let max_value = args[1].parse::<usize>().unwrap();
-    let now = Instant::now();
-    println!(
-        "Threaded: Found {} primes to {}",
-        primes_count_two_threads(max_value),
-        max_value
-    );
-    println!("Took {} seconds", now.elapsed().as_secs_f64());
+    // let now = Instant::now();
+    // println!(
+    //     "Threaded: Found {} primes to {}",
+    //     primes_count_two_threads(max_value),
+    //     max_value
+    // );
+    // println!("Took {} seconds", now.elapsed().as_secs_f64());
     let now = Instant::now();
     println!(
         "Serial: Found {} primes to {}",

@@ -6,8 +6,9 @@
 #include <math.h>
 #include <omp.h>
 
-#include <chrono>
+#include <cstdint>
 #include <iostream>
+#include <print>
 #include <sstream>
 #include <vector>
 
@@ -169,41 +170,38 @@ void print_primes_count_vector_sundaram(uint64_t max_value) {
 }
 
 void print_primes_count_vector(uint64_t max_value) {
-  std::cout << "My version" << std::endl;
-  uint64_t max_value_root_index = uint64_t((sqrt(max_value) - 3) / 2.0);
+  std::println("My version");
+  uint64_t max_value_root_index((sqrt(max_value) - 3) / 2.0);
 
   // 0, 1, 2, 3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19,
   // 20, 21, 22, 23, ...
   // 3, 5, 7, 9, 11, 13, 15, 17, 19, 21, 23, 25, 27, 29, 31, 33, 35, 37, 39, 41,
   // 43, 45, 47, 49, ...
-  uint64_t sieve_size = (max_value - 1) / 2;
+  uint64_t sieve_size{(max_value - 1) / 2};
   std::vector<bool> sieve(sieve_size, true);
 
-  uint64_t prime;
-  uint64_t i;
-  uint64_t m;
-  uint64_t operations = 0;
-  uint64_t count = 1;
-  for (i = 0; i <= max_value_root_index; ++i) {
+  uint64_t operations{0};
+  // 2 not tracked to save space but is a special prime number
+  uint64_t count{1};
+  for (uint64_t i{0}; i <= max_value_root_index; ++i) {
     if (sieve[i]) {
       ++count;
-      prime = (i * 2) + 3;
-      for (m = (prime * prime / 2) - 1; m < sieve_size; m += prime) {
+      auto prime{(i * 2) + 3};
+      for (auto m = (prime * prime / 2) - 1; m < sieve_size; m += prime) {
         sieve[m] = false;
         ++operations;
       }
     }
   }
 
-  std::cout << "Total operations: " << operations << std::endl;
-
-  for (i = max_value_root_index + 1; i < sieve_size; ++i) {
+  for (auto i = max_value_root_index + 1; i < sieve_size; ++i) {
     if (sieve[i]) {
       ++count;
     }
   }
 
-  std::cout << "Found " << count << " primes to " << max_value << std::endl;
+  std::println("Total operations: {}", operations);
+  std::println("Found {} primes to {}", count, max_value);
 }
 
 void print_primes_count_vector_2(uint64_t max_value) {
@@ -325,8 +323,8 @@ std::vector<uint64_t> gen_primes_parallel(uint64_t max_value) {
   uint divisions = 4;
   // std::cout << sieve_size << std::endl;
   double partition_size = sieve_size / double(divisions);
-  uint64_t lower_bounds[divisions];
-  uint64_t upper_bounds[divisions];
+  std::vector<uint64_t> lower_bounds{divisions};
+  std::vector<uint64_t> upper_bounds{divisions};
 
   // std::cout << partition_size << std::endl;
   // return primes;
@@ -651,7 +649,7 @@ uint64_t all_prime(std::vector<uint64_t> primes) {
   return 0;
 }
 
-int main(int argc, char* argv[]) {
+int main(int /*argc*/, char* argv[]) {
   // for(uint64_t i = 10; i < 10000000000000000000; i *= 10) {
   //     std::cout << "10^" <<log(i) / log(10) << ": " << uint64_t(double(i) /
   //     (log(i) - 1.1)) << std::endl;
